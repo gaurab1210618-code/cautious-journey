@@ -1,0 +1,14 @@
+packages:
+  "recharts": "For the interactive bubble and bar charts used in the infographic visualization"
+  "@tanstack/react-table": "For the sortable and filterable data table of all association rules"
+  "framer-motion": "For premium page transitions and staggered entrance animations"
+  "lucide-react": "For beautiful consistent iconography"
+
+images:
+  - path: "artifacts/basket-analysis/public/images/dashboard-bg.png"
+    description: "Deep dark blue and purple abstract background with soft glowing cyan and magenta light leaks, subtle data node network texture, ultra premium dark mode tech aesthetic"
+    aspect_ratio: "16:9"
+
+notes:
+  - Using generated Orval hooks from @workspace/api-client-react
+  - Assuming standard Recharts structure for visualizations
