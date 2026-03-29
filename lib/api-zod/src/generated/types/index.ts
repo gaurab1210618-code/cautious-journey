@@ -11,5 +11,8 @@ export * from "./associationRulesResponse";
 export * from "./associationRulesResponseParameters";
 export * from "./dataStats";
 export * from "./getAssociationRulesParams";
+export * from "./getRecommendationsParams";
 export * from "./healthStatus";
 export * from "./itemFrequency";
+export * from "./recommendationResponse";
+export * from "./recommendedProduct";

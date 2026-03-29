@@ -54,6 +54,35 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AssociationRulesResponse"
+  /analysis/recommend:
+    get:
+      operationId: getRecommendations
+      tags: [analysis]
+      summary: Get product recommendations
+      description: Given a product, returns recommended products based on association rules where that product appears in the antecedent
+      parameters:
+        - name: product
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: minSupport
+          in: query
+          schema:
+            type: number
+            default: 0.05
+        - name: minConfidence
+          in: query
+          schema:
+            type: number
+            default: 0.2
+      responses:
+        "200":
+          description: Product recommendations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecommendationResponse"
   /analysis/stats:
     get:
       operationId: getDataStats
@@ -149,6 +178,45 @@ components:
         - item
         - count
         - support
+    RecommendedProduct:
+      type: object
+      properties:
+        product:
+          type: string
+        confidence:
+          type: number
+        lift:
+          type: number
+        support:
+          type: number
+        triggeringRules:
+          type: integer
+      required:
+        - product
+        - confidence
+        - lift
+        - support
+        - triggeringRules
+    RecommendationResponse:
+      type: object
+      properties:
+        product:
+          type: string
+        recommendations:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecommendedProduct"
+        rulesUsed:
+          type: integer
+        allItems:
+          type: array
+          items:
+            type: string
+      required:
+        - product
+        - recommendations
+        - rulesUsed
+        - allItems
     DataStats:
       type: object
       properties:

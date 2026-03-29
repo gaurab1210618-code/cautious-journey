@@ -38,6 +38,21 @@ export interface ItemFrequency {
   support: number;
 }
 
+export interface RecommendedProduct {
+  product: string;
+  confidence: number;
+  lift: number;
+  support: number;
+  triggeringRules: number;
+}
+
+export interface RecommendationResponse {
+  product: string;
+  recommendations: RecommendedProduct[];
+  rulesUsed: number;
+  allItems: string[];
+}
+
 export interface DataStats {
   totalTransactions: number;
   totalItems: number;
@@ -49,4 +64,10 @@ export type GetAssociationRulesParams = {
   minSupport?: number;
   minConfidence?: number;
   topN?: number;
+};
+
+export type GetRecommendationsParams = {
+  product: string;
+  minSupport?: number;
+  minConfidence?: number;
 };

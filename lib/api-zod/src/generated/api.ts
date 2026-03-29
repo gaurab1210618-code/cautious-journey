@@ -66,6 +66,38 @@ export const GetAssociationRulesResponse = zod.object({
 });
 
 /**
+ * Given a product, returns recommended products based on association rules where that product appears in the antecedent
+ * @summary Get product recommendations
+ */
+export const getRecommendationsQueryMinSupportDefault = 0.05;
+export const getRecommendationsQueryMinConfidenceDefault = 0.2;
+
+export const GetRecommendationsQueryParams = zod.object({
+  product: zod.coerce.string(),
+  minSupport: zod.coerce
+    .number()
+    .default(getRecommendationsQueryMinSupportDefault),
+  minConfidence: zod.coerce
+    .number()
+    .default(getRecommendationsQueryMinConfidenceDefault),
+});
+
+export const GetRecommendationsResponse = zod.object({
+  product: zod.string(),
+  recommendations: zod.array(
+    zod.object({
+      product: zod.string(),
+      confidence: zod.number(),
+      lift: zod.number(),
+      support: zod.number(),
+      triggeringRules: zod.number(),
+    }),
+  ),
+  rulesUsed: zod.number(),
+  allItems: zod.array(zod.string()),
+});
+
+/**
  * Returns statistics about the transaction dataset
  * @summary Get dataset statistics
  */

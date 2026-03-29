@@ -206,6 +206,71 @@ export function mineAssociationRules(
   return { rules: topNRules, top3 };
 }
 
+export interface RecommendedProduct {
+  product: string;
+  confidence: number;
+  lift: number;
+  support: number;
+  triggeringRules: number;
+}
+
+export interface RecommendationResponse {
+  product: string;
+  recommendations: RecommendedProduct[];
+  rulesUsed: number;
+  allItems: string[];
+}
+
+export function recommendProducts(
+  product: string,
+  minSupport: number,
+  minConfidence: number
+): RecommendationResponse {
+  const transactions = loadTransactions();
+
+  // Collect all unique items
+  const allItemsSet = new Set<string>();
+  for (const t of transactions) {
+    for (const item of t.items) allItemsSet.add(item);
+  }
+  const allItems = Array.from(allItemsSet).sort();
+
+  const { rules } = mineAssociationRules(minSupport, minConfidence, 200);
+
+  // Python-equivalent logic:
+  // for rule in rules:
+  //   if product in rule.antecedent:
+  //     recommendations.update(rule.consequent)
+  const productMap = new Map<string, { confidences: number[]; lifts: number[]; supports: number[] }>();
+
+  let rulesUsed = 0;
+  for (const rule of rules) {
+    if (rule.antecedent.includes(product)) {
+      rulesUsed++;
+      for (const rec of rule.consequent) {
+        if (rec === product) continue;
+        const entry = productMap.get(rec) ?? { confidences: [], lifts: [], supports: [] };
+        entry.confidences.push(rule.confidence);
+        entry.lifts.push(rule.lift);
+        entry.supports.push(rule.support);
+        productMap.set(rec, entry);
+      }
+    }
+  }
+
+  const recommendations: RecommendedProduct[] = Array.from(productMap.entries())
+    .map(([prod, stats]) => ({
+      product: prod,
+      confidence: Math.round((stats.confidences.reduce((a, b) => a + b, 0) / stats.confidences.length) * 10000) / 10000,
+      lift: Math.round((stats.lifts.reduce((a, b) => a + b, 0) / stats.lifts.length) * 10000) / 10000,
+      support: Math.round((stats.supports.reduce((a, b) => a + b, 0) / stats.supports.length) * 10000) / 10000,
+      triggeringRules: stats.confidences.length,
+    }))
+    .sort((a, b) => b.lift - a.lift);
+
+  return { product, recommendations, rulesUsed, allItems };
+}
+
 export function getDataStats(): DataStats {
   const transactions = loadTransactions();
   const n = transactions.length;

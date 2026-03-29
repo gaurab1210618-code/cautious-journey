@@ -1,4 +1,27 @@
-# Workspace
+# Market Basket Analysis App
+
+## Features
+
+- **Association Rule Mining**: Apriori algorithm on 999 basket transactions (16 products)
+- **Top 3 Business Rules**: Ranked by lift, shown as highlighted cards
+- **Interactive Controls**: Sliders for minSupport and minConfidence to re-run analysis
+- **Product Recommender**: Select any product → see items frequently bought together (rules where product ∈ antecedent → collect consequents, sorted by lift)
+- **Visualizations**: Scatter plot (support vs confidence, bubble size = lift) + bar chart of item frequencies
+- **Full Rules Table**: Sortable/filterable table of all discovered association rules
+
+## Architecture
+
+- **Frontend**: `artifacts/basket-analysis` — React + Vite, Recharts, TanStack Table, Framer Motion
+- **Backend**: `artifacts/api-server` — Express 5, Apriori implementation in `src/lib/apriori.ts`
+- **Data**: `artifacts/api-server/src/data/basket_data.csv` — 999 transactions, 16 items
+
+## API Endpoints
+
+- `GET /api/analysis/rules` — mine association rules (minSupport, minConfidence, topN params)
+- `GET /api/analysis/recommend?product=Dill` — get recommendations for a product
+- `GET /api/analysis/stats` — dataset statistics (item frequencies, totals)
+
+# Workspace (original)
 
 ## Overview
 

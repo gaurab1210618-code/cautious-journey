@@ -6,6 +6,7 @@ import { RuleCard } from "@/components/RuleCard";
 import { Controls } from "@/components/Controls";
 import { RulesScatterPlot, ItemFreqBarChart } from "@/components/Visualizations";
 import { RulesDataTable } from "@/components/RulesDataTable";
+import { ProductRecommender } from "@/components/ProductRecommender";
 
 export default function Dashboard() {
   const { 
@@ -83,6 +84,9 @@ export default function Dashboard() {
           minConfidence={minConfidence}
           setMinConfidence={setMinConfidence}
         />
+
+        {/* Product Recommender */}
+        <ProductRecommender minSupport={minSupport} minConfidence={minConfidence} />
 
         {/* Loading Overlay for Rules */}
         {isRulesLoading ? (

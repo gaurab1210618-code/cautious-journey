@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { mineAssociationRules, getDataStats } from "../lib/apriori.js";
+import { mineAssociationRules, getDataStats, recommendProducts } from "../lib/apriori.js";
 
 const router: IRouter = Router();
 
@@ -27,6 +27,27 @@ router.get("/rules", (req, res) => {
   } catch (err) {
     console.error("Error mining association rules:", err);
     res.status(500).json({ error: "Failed to mine association rules" });
+  }
+});
+
+router.get("/recommend", (req, res) => {
+  try {
+    const product = String(req.query.product ?? "").trim();
+    if (!product) {
+      res.status(400).json({ error: "product query parameter is required" });
+      return;
+    }
+    const minSupport = parseFloat(String(req.query.minSupport ?? "0.05"));
+    const minConfidence = parseFloat(String(req.query.minConfidence ?? "0.2"));
+
+    const validMinSupport = Math.max(0.01, Math.min(1.0, isNaN(minSupport) ? 0.05 : minSupport));
+    const validMinConfidence = Math.max(0.01, Math.min(1.0, isNaN(minConfidence) ? 0.2 : minConfidence));
+
+    const result = recommendProducts(product, validMinSupport, validMinConfidence);
+    res.json(result);
+  } catch (err) {
+    console.error("Error generating recommendations:", err);
+    res.status(500).json({ error: "Failed to generate recommendations" });
   }
 });
 

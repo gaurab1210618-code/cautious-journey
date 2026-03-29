@@ -17,7 +17,9 @@ import type {
   AssociationRulesResponse,
   DataStats,
   GetAssociationRulesParams,
+  GetRecommendationsParams,
   HealthStatus,
+  RecommendationResponse,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -201,6 +203,104 @@ export function useGetAssociationRules<
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetAssociationRulesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * Given a product, returns recommended products based on association rules where that product appears in the antecedent
+ * @summary Get product recommendations
+ */
+export const getGetRecommendationsUrl = (params: GetRecommendationsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/analysis/recommend?${stringifiedParams}`
+    : `/api/analysis/recommend`;
+};
+
+export const getRecommendations = async (
+  params: GetRecommendationsParams,
+  options?: RequestInit,
+): Promise<RecommendationResponse> => {
+  return customFetch<RecommendationResponse>(getGetRecommendationsUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetRecommendationsQueryKey = (
+  params?: GetRecommendationsParams,
+) => {
+  return [`/api/analysis/recommend`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetRecommendationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getRecommendations>>,
+  TError = ErrorType<unknown>,
+>(
+  params: GetRecommendationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRecommendations>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetRecommendationsQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getRecommendations>>
+  > = ({ signal }) => getRecommendations(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getRecommendations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetRecommendationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getRecommendations>>
+>;
+export type GetRecommendationsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get product recommendations
+ */
+
+export function useGetRecommendations<
+  TData = Awaited<ReturnType<typeof getRecommendations>>,
+  TError = ErrorType<unknown>,
+>(
+  params: GetRecommendationsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getRecommendations>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetRecommendationsQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
