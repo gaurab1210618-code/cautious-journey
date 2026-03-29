@@ -1,8 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export interface Transaction {
   items: string[];
@@ -32,8 +29,19 @@ export interface DataStats {
   avgItemsPerTransaction: number;
 }
 
+function findCsvPath(): string {
+  const candidates = [
+    path.join(process.cwd(), "artifacts/api-server/src/data/basket_data.csv"),
+    path.join(process.cwd(), "src/data/basket_data.csv"),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  throw new Error(`basket_data.csv not found. Tried:\n${candidates.join("\n")}`);
+}
+
 function loadTransactions(): Transaction[] {
-  const csvPath = path.resolve(__dirname, "../data/basket_data.csv");
+  const csvPath = findCsvPath();
   const content = fs.readFileSync(csvPath, "utf-8");
   const lines = content.trim().split("\n");
   const header = lines[0].split(",");
