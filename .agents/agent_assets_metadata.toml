@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "s0HqdZr8AU1qGw3SJhHjB"
+uri = "file://market-basket-analysis.tar.gz"
+type = "unspecified"
+title = "Market Basket Analysis — Project Source"
