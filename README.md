@@ -1,5 +1,10 @@
 # Market Basket Analysis App
 
+A full-stack data analytics application that uses the Apriori algorithm to uncover purchasing patterns and generate product recommendations for cross-selling and business optimization.
+
+##  Live Demo
+https://insightful-infographic-visualizer--gaurabbabai2004.replit.app
+
 ## Features
 
 - **Association Rule Mining**: Apriori algorithm on 999 basket transactions (16 products)
